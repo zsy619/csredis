@@ -30,10 +30,7 @@ namespace CSRedis
 
         Task<T> WriteAsync<T>(RedisCommand<T> command)
         {
-            if (_transaction.Active)
-                return _transaction.WriteAsync(command);
-            else
-                return _connector.CallAsync(command);
+            return _transaction.Active ? _transaction.WriteAsync(command) : _connector.CallAsync(command);
         }
 
         #region Connection
@@ -396,29 +393,31 @@ namespace CSRedis
             return WriteAsync(RedisCommands.Type(key));
         }
 
-		/// <summary>
-		/// Iterate the set of keys in the currently selected Redis database
-		/// </summary>
-		/// <param name="cursor">The cursor returned by the server in the previous call, or 0 if this is the first call</param>
-		/// <param name="pattern">Glob-style pattern to filter returned elements</param>
-		/// <param name="count">Set the maximum number of elements to return</param>
-		/// <returns>Updated cursor and result set</returns>
-		public Task<RedisScan<string>> ScanAsync(long cursor, string pattern = null, long? count = null) {
-			return WriteAsync(RedisCommands.Scan(cursor, pattern, count));
-		}
-		public Task<RedisScan<byte[]>> ScanBytesAsync(long cursor, string pattern = null, long? count = null) {
-			return WriteAsync(RedisCommands.ScanBytes(cursor, pattern, count));
-		}
-		#endregion
+        /// <summary>
+        /// Iterate the set of keys in the currently selected Redis database
+        /// </summary>
+        /// <param name="cursor">The cursor returned by the server in the previous call, or 0 if this is the first call</param>
+        /// <param name="pattern">Glob-style pattern to filter returned elements</param>
+        /// <param name="count">Set the maximum number of elements to return</param>
+        /// <returns>Updated cursor and result set</returns>
+        public Task<RedisScan<string>> ScanAsync(long cursor, string pattern = null, long? count = null)
+        {
+            return WriteAsync(RedisCommands.Scan(cursor, pattern, count));
+        }
+        public Task<RedisScan<byte[]>> ScanBytesAsync(long cursor, string pattern = null, long? count = null)
+        {
+            return WriteAsync(RedisCommands.ScanBytes(cursor, pattern, count));
+        }
+        #endregion
 
-		#region Hashes
-		/// <summary>
-		/// Delete one or more hash fields
-		/// </summary>
-		/// <param name="key">Hash key</param>
-		/// <param name="fields">Fields to delete</param>
-		/// <returns>Number of fields removed from hash</returns>
-		public Task<long> HDelAsync(string key, params string[] fields)
+        #region Hashes
+        /// <summary>
+        /// Delete one or more hash fields
+        /// </summary>
+        /// <param name="key">Hash key</param>
+        /// <param name="fields">Fields to delete</param>
+        /// <returns>Number of fields removed from hash</returns>
+        public Task<long> HDelAsync(string key, params string[] fields)
         {
             return WriteAsync(RedisCommands.HDel(key, fields));
         }
@@ -444,7 +443,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.HGet(key, field));
         }
-		public Task<byte[]> HGetBytesAsync(string key, string field)
+        public Task<byte[]> HGetBytesAsync(string key, string field)
         {
             return WriteAsync(RedisCommands.HGetBytes(key, field));
         }
@@ -470,7 +469,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.HGetAll(key));
         }
-		public Task<Dictionary<string, byte[]>> HGetAllBytesAsync(string key)
+        public Task<Dictionary<string, byte[]>> HGetAllBytesAsync(string key)
         {
             return WriteAsync(RedisCommands.HGetAllBytes(key));
         }
@@ -529,7 +528,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.HMGet(key, fields));
         }
-		public Task<byte[][]> HMGetBytesAsync(string key, params string[] fields)
+        public Task<byte[][]> HMGetBytesAsync(string key, params string[] fields)
         {
             return WriteAsync(RedisCommands.HMGetBytes(key, fields));
         }
@@ -602,12 +601,12 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.HVals(key));
         }
-		public Task<byte[][]> HValsBytesAsync(string key)
+        public Task<byte[][]> HValsBytesAsync(string key)
         {
             return WriteAsync(RedisCommands.HValsBytes(key));
         }
 
-		/// <summary>
+        /// <summary>
         /// Iterate the keys and values of a hash field
         /// </summary>
         /// <param name="key">Hash key</param>
@@ -619,24 +618,24 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.HScan(key, cursor, pattern, count));
         }
-		public Task<RedisScan<Tuple<string, byte[]>>> HScanBytesAsync(string key, long cursor, string pattern = null, long? count = null)
+        public Task<RedisScan<Tuple<string, byte[]>>> HScanBytesAsync(string key, long cursor, string pattern = null, long? count = null)
         {
             return WriteAsync(RedisCommands.HScanBytes(key, cursor, pattern, count));
         }
-		#endregion
+        #endregion
 
-		#region Lists
-		/// <summary>
-		/// Get an element from a list by its index
-		/// </summary>
-		/// <param name="key">List key</param>
-		/// <param name="index">Zero-based index of item to return</param>
-		/// <returns>Element at index</returns>
-		public Task<string> LIndexAsync(string key, long index)
+        #region Lists
+        /// <summary>
+        /// Get an element from a list by its index
+        /// </summary>
+        /// <param name="key">List key</param>
+        /// <param name="index">Zero-based index of item to return</param>
+        /// <returns>Element at index</returns>
+        public Task<string> LIndexAsync(string key, long index)
         {
             return WriteAsync(RedisCommands.LIndex(key, index));
         }
-		public Task<byte[]> LIndexBytesAsync(string key, long index)
+        public Task<byte[]> LIndexBytesAsync(string key, long index)
         {
             return WriteAsync(RedisCommands.LIndexBytes(key, index));
         }
@@ -673,7 +672,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.LPop(key));
         }
-		public Task<byte[]> LPopBytesAsync(string key)
+        public Task<byte[]> LPopBytesAsync(string key)
         {
             return WriteAsync(RedisCommands.LPopBytes(key));
         }
@@ -711,7 +710,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.LRange(key, start, stop));
         }
-		public Task<byte[][]> LRangeBytesAsync(string key, long start, long stop)
+        public Task<byte[][]> LRangeBytesAsync(string key, long start, long stop)
         {
             return WriteAsync(RedisCommands.LRangeBytes(key, start, stop));
         }
@@ -761,7 +760,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.RPop(key));
         }
-		public Task<byte[]> RPopBytesAsync(string key)
+        public Task<byte[]> RPopBytesAsync(string key)
         {
             return WriteAsync(RedisCommands.RPopBytes(key));
         }
@@ -776,7 +775,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.RPopLPush(source, destination));
         }
-		public Task<byte[]> RPopBytesLPushAsync(string source, string destination)
+        public Task<byte[]> RPopBytesLPushAsync(string source, string destination)
         {
             return WriteAsync(RedisCommands.RPopBytesLPush(source, destination));
         }
@@ -835,7 +834,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.SDiff(keys));
         }
-		public Task<byte[][]> SDiffBytesAsync(params string[] keys)
+        public Task<byte[][]> SDiffBytesAsync(params string[] keys)
         {
             return WriteAsync(RedisCommands.SDiffBytes(keys));
         }
@@ -860,7 +859,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.SInter(keys));
         }
-		public Task<byte[][]> SInterBytesAsync(params string[] keys)
+        public Task<byte[][]> SInterBytesAsync(params string[] keys)
         {
             return WriteAsync(RedisCommands.SInterBytes(keys));
         }
@@ -896,7 +895,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.SMembers(key));
         }
-		public Task<byte[][]> SMembersBytesAsync(string key)
+        public Task<byte[][]> SMembersBytesAsync(string key)
         {
             return WriteAsync(RedisCommands.SMembersBytes(key));
         }
@@ -922,7 +921,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.SPop(key));
         }
-		public Task<byte[]> SPopBytesAsync(string key)
+        public Task<byte[]> SPopBytesAsync(string key)
         {
             return WriteAsync(RedisCommands.SPopBytes(key));
         }
@@ -936,7 +935,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.SRandMember(key));
         }
-		public Task<byte[]> SRandMemberBytesAsync(string key)
+        public Task<byte[]> SRandMemberBytesAsync(string key)
         {
             return WriteAsync(RedisCommands.SRandMemberBytes(key));
         }
@@ -951,7 +950,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.SRandMembers(key, count));
         }
-		public Task<byte[][]> SRandMembersBytesAsync(string key, long count)
+        public Task<byte[][]> SRandMembersBytesAsync(string key, long count)
         {
             return WriteAsync(RedisCommands.SRandMembersBytes(key, count));
         }
@@ -976,7 +975,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.SUnion(keys));
         }
-		public Task<byte[][]> SUnionBytesAsync(params string[] keys)
+        public Task<byte[][]> SUnionBytesAsync(params string[] keys)
         {
             return WriteAsync(RedisCommands.SUnionBytes(keys));
         }
@@ -992,7 +991,7 @@ namespace CSRedis
             return WriteAsync(RedisCommands.SUnionStore(destination, keys));
         }
 
-		/// <summary>
+        /// <summary>
         /// Iterate the elements of a set field
         /// </summary>
         /// <param name="key">Set key</param>
@@ -1004,7 +1003,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.SScan(key, cursor, pattern, count));
         }
-		public Task<RedisScan<byte[]>> SScanBytesAsync(string key, long cursor, string pattern = null, long? count = null)
+        public Task<RedisScan<byte[]>> SScanBytesAsync(string key, long cursor, string pattern = null, long? count = null)
         {
             return WriteAsync(RedisCommands.SScanBytes(key, cursor, pattern, count));
         }
@@ -1117,7 +1116,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRange(key, start, stop, withScores));
         }
-		public Task<byte[][]> ZRangeBytesAsync(string key, long start, long stop, bool withScores = false)
+        public Task<byte[][]> ZRangeBytesAsync(string key, long start, long stop, bool withScores = false)
         {
             return WriteAsync(RedisCommands.ZRangeBytes(key, start, stop, withScores));
         }
@@ -1133,7 +1132,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRangeWithScores(key, start, stop));
         }
-		public Task<Tuple<byte[], double>[]> ZRangeBytesWithScoresAsync(string key, long start, long stop)
+        public Task<Tuple<byte[], double>[]> ZRangeBytesWithScoresAsync(string key, long start, long stop)
         {
             return WriteAsync(RedisCommands.ZRangeBytesWithScores(key, start, stop));
         }
@@ -1154,7 +1153,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRangeByScore(key, min, max, withScores, exclusiveMin, exclusiveMax, offset, count));
         }
-		public Task<byte[][]> ZRangeBytesByScoreAsync(string key, double min, double max, bool withScores = false, bool exclusiveMin = false, bool exclusiveMax = false, long? offset = null, long? count = null)
+        public Task<byte[][]> ZRangeBytesByScoreAsync(string key, double min, double max, bool withScores = false, bool exclusiveMin = false, bool exclusiveMax = false, long? offset = null, long? count = null)
         {
             return WriteAsync(RedisCommands.ZRangeBytesByScore(key, min, max, withScores, exclusiveMin, exclusiveMax, offset, count));
         }
@@ -1173,7 +1172,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRangeByScore(key, min, max, withScores, offset, count));
         }
-		public Task<byte[][]> ZRangeBytesByScoreAsync(string key, string min, string max, bool withScores = false, long? offset = null, long? count = null)
+        public Task<byte[][]> ZRangeBytesByScoreAsync(string key, string min, string max, bool withScores = false, long? offset = null, long? count = null)
         {
             return WriteAsync(RedisCommands.ZRangeBytesByScore(key, min, max, withScores, offset, count));
         }
@@ -1193,7 +1192,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRangeByScoreWithScores(key, min, max, exclusiveMin, exclusiveMax, offset, count));
         }
-		public Task<Tuple<byte[], double>[]> ZRangeBytesByScoreWithScoresAsync(string key, double min, double max, bool exclusiveMin = false, bool exclusiveMax = false, long? offset = null, long? count = null)
+        public Task<Tuple<byte[], double>[]> ZRangeBytesByScoreWithScoresAsync(string key, double min, double max, bool exclusiveMin = false, bool exclusiveMax = false, long? offset = null, long? count = null)
         {
             return WriteAsync(RedisCommands.ZRangeBytesByScoreWithScores(key, min, max, exclusiveMin, exclusiveMax, offset, count));
         }
@@ -1211,7 +1210,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRangeByScoreWithScores(key, min, max, offset, count));
         }
-		public Task<Tuple<byte[], double>[]> ZRangeBytesByScoreWithScoresAsync(string key, string min, string max, long? offset = null, long? count = null)
+        public Task<Tuple<byte[], double>[]> ZRangeBytesByScoreWithScoresAsync(string key, string min, string max, long? offset = null, long? count = null)
         {
             return WriteAsync(RedisCommands.ZRangeBytesByScoreWithScores(key, min, max, offset, count));
         }
@@ -1263,7 +1262,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRemRangeByScore(key, min, max, exclusiveMin, exclusiveMax));
         }
-		public Task<long> ZRemRangeByScoreAsync(string key, string min, string max)
+        public Task<long> ZRemRangeByScoreAsync(string key, string min, string max)
         {
             return WriteAsync(RedisCommands.ZRemRangeByScore(key, min, max));
         }
@@ -1280,7 +1279,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRevRange(key, start, stop, withScores));
         }
-		public Task<byte[][]> ZRevRangeBytesAsync(string key, long start, long stop, bool withScores = false)
+        public Task<byte[][]> ZRevRangeBytesAsync(string key, long start, long stop, bool withScores = false)
         {
             return WriteAsync(RedisCommands.ZRevRangeBytes(key, start, stop, withScores));
         }
@@ -1296,7 +1295,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRevRangeWithScores(key, start, stop));
         }
-		public Task<Tuple<byte[], double>[]> ZRevRangeBytesWithScoresAsync(string key, long start, long stop)
+        public Task<Tuple<byte[], double>[]> ZRevRangeBytesWithScoresAsync(string key, long start, long stop)
         {
             return WriteAsync(RedisCommands.ZRevRangeBytesWithScores(key, start, stop));
         }
@@ -1317,25 +1316,26 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRevRangeByScore(key, max, min, withScores, exclusiveMax, exclusiveMin, offset, count));
         }
-		public Task<byte[][]> ZRevRangeBytesByScoreAsync(string key, double max, double min, bool withScores = false, bool exclusiveMax = false, bool exclusiveMin = false, long? offset = null, long? count = null) {
-			return WriteAsync(RedisCommands.ZRevRangeBytesByScore(key, max, min, withScores, exclusiveMax, exclusiveMin, offset, count));
-		}
+        public Task<byte[][]> ZRevRangeBytesByScoreAsync(string key, double max, double min, bool withScores = false, bool exclusiveMax = false, bool exclusiveMin = false, long? offset = null, long? count = null)
+        {
+            return WriteAsync(RedisCommands.ZRevRangeBytesByScore(key, max, min, withScores, exclusiveMax, exclusiveMin, offset, count));
+        }
 
-		/// <summary>
-		/// Return a range of members in a sorted set, by score, with scores ordered from high to low
-		/// </summary>
-		/// <param name="key">Sorted set key</param>
-		/// <param name="max">Maximum score</param>
-		/// <param name="min">Minimum score</param>
-		/// <param name="withScores">Include scores in result</param>
-		/// <param name="offset">Start offset</param>
-		/// <param name="count">Number of elements to return</param>
-		/// <returns>List of elements in the specified score range (with optional scores)</returns>
-		public Task<string[]> ZRevRangeByScoreAsync(string key, string max, string min, bool withScores = false, long? offset = null, long? count = null)
+        /// <summary>
+        /// Return a range of members in a sorted set, by score, with scores ordered from high to low
+        /// </summary>
+        /// <param name="key">Sorted set key</param>
+        /// <param name="max">Maximum score</param>
+        /// <param name="min">Minimum score</param>
+        /// <param name="withScores">Include scores in result</param>
+        /// <param name="offset">Start offset</param>
+        /// <param name="count">Number of elements to return</param>
+        /// <returns>List of elements in the specified score range (with optional scores)</returns>
+        public Task<string[]> ZRevRangeByScoreAsync(string key, string max, string min, bool withScores = false, long? offset = null, long? count = null)
         {
             return WriteAsync(RedisCommands.ZRevRangeByScore(key, max, min, withScores, offset, count));
         }
-		public Task<byte[][]> ZRevRangeBytesByScoreAsync(string key, string max, string min, bool withScores = false, long? offset = null, long? count = null)
+        public Task<byte[][]> ZRevRangeBytesByScoreAsync(string key, string max, string min, bool withScores = false, long? offset = null, long? count = null)
         {
             return WriteAsync(RedisCommands.ZRevRangeBytesByScore(key, max, min, withScores, offset, count));
         }
@@ -1355,7 +1355,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRevRangeByScoreWithScores(key, max, min, exclusiveMax, exclusiveMin, offset, count));
         }
-		public Task<Tuple<byte[], double>[]> ZRevRangeBytesByScoreWithScoresAsync(string key, double max, double min, bool exclusiveMax = false, bool exclusiveMin = false, long? offset = null, long? count = null)
+        public Task<Tuple<byte[], double>[]> ZRevRangeBytesByScoreWithScoresAsync(string key, double max, double min, bool exclusiveMax = false, bool exclusiveMin = false, long? offset = null, long? count = null)
         {
             return WriteAsync(RedisCommands.ZRevRangeBytesByScoreWithScores(key, max, min, exclusiveMax, exclusiveMin, offset, count));
         }
@@ -1373,7 +1373,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRevRangeByScoreWithScores(key, max, min, offset, count));
         }
-		public Task<Tuple<byte[], double>[]> ZRevRangeBytesByScoreWithScoresAsync(string key, string max, string min, long? offset = null, long? count = null)
+        public Task<Tuple<byte[], double>[]> ZRevRangeBytesByScoreWithScoresAsync(string key, string max, string min, long? offset = null, long? count = null)
         {
             return WriteAsync(RedisCommands.ZRevRangeBytesByScoreWithScores(key, max, min, offset, count));
         }
@@ -1425,7 +1425,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZScan(key, cursor, pattern, count));
         }
-		public Task<RedisScan<Tuple<byte[], double>>> ZScanBytesAsync(string key, long cursor, string pattern = null, long? count = null)
+        public Task<RedisScan<Tuple<byte[], double>>> ZScanBytesAsync(string key, long cursor, string pattern = null, long? count = null)
         {
             return WriteAsync(RedisCommands.ZScanBytes(key, cursor, pattern, count));
         }
@@ -1443,7 +1443,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.ZRangeByLex(key, min, max, offset, count));
         }
-		public Task<byte[][]> ZRangeBytesByLexAsync(string key, string min, string max, long? offset = null, long? count = null)
+        public Task<byte[][]> ZRangeBytesByLexAsync(string key, string min, string max, long? offset = null, long? count = null)
         {
             return WriteAsync(RedisCommands.ZRangeBytesByLex(key, min, max, offset, count));
         }
@@ -1540,12 +1540,12 @@ namespace CSRedis
             return WriteAsync(RedisCommands.EvalSHA(sha1, keys, arguments));
         }
 
-		/// <summary>
-		/// Check existence of script SHA hashes in the script cache
-		/// </summary>
-		/// <param name="sha1s">SHA1 script hashes</param>
-		/// <returns>Array of boolean values indicating script existence on server</returns>
-		public Task<bool[]> ScriptExistsAsync(params string[] sha1s)
+        /// <summary>
+        /// Check existence of script SHA hashes in the script cache
+        /// </summary>
+        /// <param name="sha1s">SHA1 script hashes</param>
+        /// <returns>Array of boolean values indicating script existence on server</returns>
+        public Task<bool[]> ScriptExistsAsync(params string[] sha1s)
         {
             return WriteAsync(RedisCommands.ScriptExists(sha1s));
         }
@@ -1658,18 +1658,18 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.Get(key));
         }
-		public Task<byte[]> GetBytesAsync(string key)
-		{
-			return WriteAsync(RedisCommands.GetBytes(key));
-		}
+        public Task<byte[]> GetBytesAsync(string key)
+        {
+            return WriteAsync(RedisCommands.GetBytes(key));
+        }
 
-		/// <summary>
-		/// Returns the bit value at offset in the string value stored at key
-		/// </summary>
-		/// <param name="key">Key to lookup</param>
-		/// <param name="offset">Offset of key to check</param>
-		/// <returns>Bit value stored at offset</returns>
-		public Task<bool> GetBitAsync(string key, uint offset)
+        /// <summary>
+        /// Returns the bit value at offset in the string value stored at key
+        /// </summary>
+        /// <param name="key">Key to lookup</param>
+        /// <param name="offset">Offset of key to check</param>
+        /// <returns>Bit value stored at offset</returns>
+        public Task<bool> GetBitAsync(string key, uint offset)
         {
             return WriteAsync(RedisCommands.GetBit(key, offset));
         }
@@ -1685,7 +1685,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.GetRange(key, start, end));
         }
-		public Task<byte[]> GetRangeBytesAsync(string key, long start, long end)
+        public Task<byte[]> GetRangeBytesAsync(string key, long start, long end)
         {
             return WriteAsync(RedisCommands.GetRangeBytes(key, start, end));
         }
@@ -1700,7 +1700,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.GetSet(key, value));
         }
-		public Task<byte[]> GetSetBytesAsync(string key, object value)
+        public Task<byte[]> GetSetBytesAsync(string key, object value)
         {
             return WriteAsync(RedisCommands.GetSetBytes(key, value));
         }
@@ -1746,7 +1746,7 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.MGet(keys));
         }
-		public Task<byte[][]> MGetBytesAsync(params string[] keys)
+        public Task<byte[][]> MGetBytesAsync(params string[] keys)
         {
             return WriteAsync(RedisCommands.MGetBytes(keys));
         }
@@ -2269,99 +2269,107 @@ namespace CSRedis
         {
             return WriteAsync(RedisCommands.PfMerge(destKey, sourceKeys));
         }
-		#endregion
+        #endregion
 
-		#region Geo redis-server 3.2
-		public Task<long> GeoAddAsync(string key, params (double longitude, double latitude, object member)[] values) {
-			if (values == null || values.Length == 0) throw new Exception("values 参数不能为空");
-			var args = new List<object>();
-			args.Add(key);
-			foreach (var v in values) args.AddRange(new object[] { v.longitude, v.latitude, v.member });
-			return WriteAsync(new RedisInt("GEOADD", args.ToArray()));
-		}
-		public Task<double?> GeoDistAsync(string key, object member1, object member2, GeoUnit unit = GeoUnit.m) {
-			if (unit == GeoUnit.m) return WriteAsync(new RedisFloat.Nullable("GEODIST", key, member1, member2));
-			return WriteAsync(new RedisFloat.Nullable("GEODIST", key, member1, member2, unit));
-		}
-		public Task<string[]> GeoHashAsync(string key, object[] members) {
-			if (members == null || members.Length == 0) throw new Exception("values 参数不能为空");
-			var args = new List<object>();
-			args.Add(key);
-			args.AddRange(members);
-			return WriteAsync(new RedisArray.Strings("GEOHASH", args.ToArray()));
-		}
-		async public Task<(double longitude, double latitude)?[]> GeoPosAsync(string key, object[] members) {
-			if (members == null || members.Length == 0) throw new Exception("values 参数不能为空");
-			var args = new List<object>();
-			args.Add(key);
-			args.AddRange(members);
-			var ret = await WriteAsync(new RedisArray.Generic<double[]>(new RedisArray.Generic<double>(new RedisFloat("GEOPOS", args.ToArray()))));
-			return ret.Select(a => a != null && a.Length == 2 ? new(double, double)?((a[0], a[1])) : null).ToArray();
-		}
-		async public Task<(string member, double dist, double longitude, double latitude, long hash)[]> GeoRadiusAsync(string key, double longitude, double latitude, double radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false) {
-			var args = new List<object>(new object[] { key, longitude, latitude, radius, unit });
-			if (withCoord) args.Add("WITHCOORD");
-			if (withDist) args.Add("WITHDIST");
-			if (withHash) args.Add("WITHHASH");
-			if (count.HasValue) args.Add(count);
-			if (sorting.HasValue) args.Add(sorting);
+        #region Geo redis-server 3.2
+        public Task<long> GeoAddAsync(string key, params (double longitude, double latitude, object member)[] values)
+        {
+            if (values == null || values.Length == 0) throw new Exception("values 参数不能为空");
+            var args = new List<object>();
+            args.Add(key);
+            foreach (var v in values) args.AddRange(new object[] { v.longitude, v.latitude, v.member });
+            return WriteAsync(new RedisInt("GEOADD", args.ToArray()));
+        }
+        public Task<double?> GeoDistAsync(string key, object member1, object member2, GeoUnit unit = GeoUnit.m)
+        {
+            if (unit == GeoUnit.m) return WriteAsync(new RedisFloat.Nullable("GEODIST", key, member1, member2));
+            return WriteAsync(new RedisFloat.Nullable("GEODIST", key, member1, member2, unit));
+        }
+        public Task<string[]> GeoHashAsync(string key, object[] members)
+        {
+            if (members == null || members.Length == 0) throw new Exception("values 参数不能为空");
+            var args = new List<object>();
+            args.Add(key);
+            args.AddRange(members);
+            return WriteAsync(new RedisArray.Strings("GEOHASH", args.ToArray()));
+        }
+        async public Task<(double longitude, double latitude)?[]> GeoPosAsync(string key, object[] members)
+        {
+            if (members == null || members.Length == 0) throw new Exception("values 参数不能为空");
+            var args = new List<object>();
+            args.Add(key);
+            args.AddRange(members);
+            var ret = await WriteAsync(new RedisArray.Generic<double[]>(new RedisArray.Generic<double>(new RedisFloat("GEOPOS", args.ToArray()))));
+            return ret.Select(a => a != null && a.Length == 2 ? new(double, double)?((a[0], a[1])) : null).ToArray();
+        }
+        async public Task<(string member, double dist, double longitude, double latitude, long hash)[]> GeoRadiusAsync(string key, double longitude, double latitude, double radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false)
+        {
+            var args = new List<object>(new object[] { key, longitude, latitude, radius, unit });
+            if (withCoord) args.Add("WITHCOORD");
+            if (withDist) args.Add("WITHDIST");
+            if (withHash) args.Add("WITHHASH");
+            if (count.HasValue) args.Add(count);
+            if (sorting.HasValue) args.Add(sorting);
 
-			var cmd = new RedisTuple.Generic<string, double, long, double[]>.Single(
-				new RedisString(null),
-				withDist == false ? null : new RedisFloat(null),
-				withHash == false ? null : new RedisInt(null),
-				withCoord == false ? null : new RedisArray.Generic<double>(new RedisFloat(null)), "GEORADIUS", args.ToArray());
-			var ret = await WriteAsync(new RedisArray.Generic<Tuple<string, double, long, double[]>>(cmd));
-			return ret.Select(a => (a.Item1, a.Item2, a.Item4 == null ? default(double) : a.Item4[0], a.Item4 == null ? default(double) : a.Item4[1], a.Item3)).ToArray();
-		}
-		async public Task<(byte[] member, double dist, double longitude, double latitude, long hash)[]> GeoRadiusBytesAsync(string key, double longitude, double latitude, double radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false) {
-			var args = new List<object>(new object[] { key, longitude, latitude, radius, unit });
-			if (withCoord) args.Add("WITHCOORD");
-			if (withDist) args.Add("WITHDIST");
-			if (withHash) args.Add("WITHHASH");
-			if (count.HasValue) args.Add(count);
-			if (sorting.HasValue) args.Add(sorting);
+            var cmd = new RedisTuple.Generic<string, double, long, double[]>.Single(
+                new RedisString(null),
+                withDist == false ? null : new RedisFloat(null),
+                withHash == false ? null : new RedisInt(null),
+                withCoord == false ? null : new RedisArray.Generic<double>(new RedisFloat(null)), "GEORADIUS", args.ToArray());
+            var ret = await WriteAsync(new RedisArray.Generic<Tuple<string, double, long, double[]>>(cmd));
+            return ret.Select(a => (a.Item1, a.Item2, a.Item4 == null ? default(double) : a.Item4[0], a.Item4 == null ? default(double) : a.Item4[1], a.Item3)).ToArray();
+        }
+        async public Task<(byte[] member, double dist, double longitude, double latitude, long hash)[]> GeoRadiusBytesAsync(string key, double longitude, double latitude, double radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false)
+        {
+            var args = new List<object>(new object[] { key, longitude, latitude, radius, unit });
+            if (withCoord) args.Add("WITHCOORD");
+            if (withDist) args.Add("WITHDIST");
+            if (withHash) args.Add("WITHHASH");
+            if (count.HasValue) args.Add(count);
+            if (sorting.HasValue) args.Add(sorting);
 
-			var cmd = new RedisTuple.Generic<byte[], double, long, double[]>.Single(
-				new RedisBytes(null),
-				withDist == false ? null : new RedisFloat(null),
-				withHash == false ? null : new RedisInt(null),
-				withCoord == false ? null : new RedisArray.Generic<double>(new RedisFloat(null)), "GEORADIUS", args.ToArray());
-			var ret = await WriteAsync(new RedisArray.Generic<Tuple<byte[], double, long, double[]>>(cmd));
-			return ret.Select(a => (a.Item1, a.Item2, a.Item4 == null ? default(double) : a.Item4[0], a.Item4 == null ? default(double) : a.Item4[1], a.Item3)).ToArray();
-		}
-		async public Task<(string member, double dist, double longitude, double latitude, long hash)[]> GeoRadiusByMemberAsync(string key, object member, double radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false) {
-			var args = new List<object>(new object[] { key, member, radius, unit });
-			if (withCoord) args.Add("WITHCOORD");
-			if (withDist) args.Add("WITHDIST");
-			if (withHash) args.Add("WITHHASH");
-			if (count.HasValue) args.Add(count);
-			if (sorting.HasValue) args.Add(sorting);
+            var cmd = new RedisTuple.Generic<byte[], double, long, double[]>.Single(
+                new RedisBytes(null),
+                withDist == false ? null : new RedisFloat(null),
+                withHash == false ? null : new RedisInt(null),
+                withCoord == false ? null : new RedisArray.Generic<double>(new RedisFloat(null)), "GEORADIUS", args.ToArray());
+            var ret = await WriteAsync(new RedisArray.Generic<Tuple<byte[], double, long, double[]>>(cmd));
+            return ret.Select(a => (a.Item1, a.Item2, a.Item4 == null ? default(double) : a.Item4[0], a.Item4 == null ? default(double) : a.Item4[1], a.Item3)).ToArray();
+        }
+        async public Task<(string member, double dist, double longitude, double latitude, long hash)[]> GeoRadiusByMemberAsync(string key, object member, double radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false)
+        {
+            var args = new List<object>(new object[] { key, member, radius, unit });
+            if (withCoord) args.Add("WITHCOORD");
+            if (withDist) args.Add("WITHDIST");
+            if (withHash) args.Add("WITHHASH");
+            if (count.HasValue) args.Add(count);
+            if (sorting.HasValue) args.Add(sorting);
 
-			var cmd = new RedisTuple.Generic<string, double, long, double[]>.Single(
-				new RedisString(null),
-				withDist == false ? null : new RedisFloat(null),
-				withHash == false ? null : new RedisInt(null),
-				withCoord == false ? null : new RedisArray.Generic<double>(new RedisFloat(null)), "GEORADIUSBYMEMBER", args.ToArray());
-			var ret = await WriteAsync(new RedisArray.Generic<Tuple<string, double, long, double[]>>(cmd));
-			return ret.Select(a => (a.Item1, a.Item2, a.Item4 == null ? default(double) : a.Item4[0], a.Item4 == null ? default(double) : a.Item4[1], a.Item3)).ToArray();
-		}
-		async public Task<(byte[] member, double dist, double longitude, double latitude, long hash)[]> GeoRadiusBytesByMemberAsync(string key, object member, double radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false) {
-			var args = new List<object>(new object[] { key, member, radius, unit });
-			if (withCoord) args.Add("WITHCOORD");
-			if (withDist) args.Add("WITHDIST");
-			if (withHash) args.Add("WITHHASH");
-			if (count.HasValue) args.Add(count);
-			if (sorting.HasValue) args.Add(sorting);
+            var cmd = new RedisTuple.Generic<string, double, long, double[]>.Single(
+                new RedisString(null),
+                withDist == false ? null : new RedisFloat(null),
+                withHash == false ? null : new RedisInt(null),
+                withCoord == false ? null : new RedisArray.Generic<double>(new RedisFloat(null)), "GEORADIUSBYMEMBER", args.ToArray());
+            var ret = await WriteAsync(new RedisArray.Generic<Tuple<string, double, long, double[]>>(cmd));
+            return ret.Select(a => (a.Item1, a.Item2, a.Item4 == null ? default(double) : a.Item4[0], a.Item4 == null ? default(double) : a.Item4[1], a.Item3)).ToArray();
+        }
+        async public Task<(byte[] member, double dist, double longitude, double latitude, long hash)[]> GeoRadiusBytesByMemberAsync(string key, object member, double radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false)
+        {
+            var args = new List<object>(new object[] { key, member, radius, unit });
+            if (withCoord) args.Add("WITHCOORD");
+            if (withDist) args.Add("WITHDIST");
+            if (withHash) args.Add("WITHHASH");
+            if (count.HasValue) args.Add(count);
+            if (sorting.HasValue) args.Add(sorting);
 
-			var cmd = new RedisTuple.Generic<byte[], double, long, double[]>.Single(
-				new RedisBytes(null),
-				withDist == false ? null : new RedisFloat(null),
-				withHash == false ? null : new RedisInt(null),
-				withCoord == false ? null : new RedisArray.Generic<double>(new RedisFloat(null)), "GEORADIUSBYMEMBER", args.ToArray());
-			var ret = await WriteAsync(new RedisArray.Generic<Tuple<byte[], double, long, double[]>>(cmd));
-			return ret.Select(a => (a.Item1, a.Item2, a.Item4 == null ? default(double) : a.Item4[0], a.Item4 == null ? default(double) : a.Item4[1], a.Item3)).ToArray();
-		}
-		#endregion
-	}
+            var cmd = new RedisTuple.Generic<byte[], double, long, double[]>.Single(
+                new RedisBytes(null),
+                withDist == false ? null : new RedisFloat(null),
+                withHash == false ? null : new RedisInt(null),
+                withCoord == false ? null : new RedisArray.Generic<double>(new RedisFloat(null)), "GEORADIUSBYMEMBER", args.ToArray());
+            var ret = await WriteAsync(new RedisArray.Generic<Tuple<byte[], double, long, double[]>>(cmd));
+            return ret.Select(a => (a.Item1, a.Item2, a.Item4 == null ? default(double) : a.Item4[0], a.Item4 == null ? default(double) : a.Item4[1], a.Item3)).ToArray();
+        }
+        #endregion
+    }
 }

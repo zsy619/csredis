@@ -70,7 +70,7 @@ namespace CSRedis
         /// Get or set the string encoding used to communicate with the server
         /// </summary>
         public Encoding Encoding
-        { 
+        {
             get { return _connector.Encoding; }
             set { _connector.Encoding = value; }
         }
@@ -110,7 +110,7 @@ namespace CSRedis
             get { return _connector.ReconnectWait; }
             set { _connector.ReconnectWait = value; }
         }
-        
+
 
         /// <summary>
         /// Create a new RedisClient using default port and encoding
@@ -186,7 +186,7 @@ namespace CSRedis
         /// <param name="asyncConcurrency">Max concurrent threads (default 1000)</param>
         /// <param name="asyncBufferSize">Async thread buffer size (default 10240 bytes)</param>
         public RedisClient(EndPoint endpoint, int asyncConcurrency, int asyncBufferSize)
-            : this (endpoint, DefaultSSL, asyncConcurrency, asyncBufferSize)
+            : this(endpoint, DefaultSSL, asyncConcurrency, asyncBufferSize)
         { }
 
         /// <summary>
@@ -206,9 +206,9 @@ namespace CSRedis
 
         internal RedisClient(IRedisSocket socket, EndPoint endpoint, int asyncConcurrency, int asyncBufferSize)
         {
-			// use invariant culture - we have to set it explicitly for every thread we create to 
-			// prevent any floating-point problems (mostly because of number formats in non en-US cultures).
-			CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+            // use invariant culture - we have to set it explicitly for every thread we create to 
+            // prevent any floating-point problems (mostly because of number formats in non en-US cultures).
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 
             _connector = new RedisConnector(endpoint, socket, asyncConcurrency, asyncBufferSize);
             _transaction = new RedisTransaction(_connector);
@@ -250,7 +250,7 @@ namespace CSRedis
             else
                 return _connector.EndPipe();
         }
-        
+
         /// <summary>
         /// Stream a BULK reply from the server using default buffer size
         /// </summary>
@@ -319,20 +319,18 @@ namespace CSRedis
         {
             if (_connector.EndPoint is IPEndPoint)
                 return (_connector.EndPoint as IPEndPoint).Address.ToString();
-            else if (_connector.EndPoint is DnsEndPoint)
+            if (_connector.EndPoint is DnsEndPoint)
                 return (_connector.EndPoint as DnsEndPoint).Host;
-            else
-                return null;
+            return null;
         }
 
         int GetPort()
         {
             if (_connector.EndPoint is IPEndPoint)
                 return (_connector.EndPoint as IPEndPoint).Port;
-            else if (_connector.EndPoint is DnsEndPoint)
+            if (_connector.EndPoint is DnsEndPoint)
                 return (_connector.EndPoint as DnsEndPoint).Port;
-            else
-                return -1;
+            return -1;
         }
     }
 }

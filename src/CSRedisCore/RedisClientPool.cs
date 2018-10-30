@@ -96,12 +96,27 @@ namespace CSRedis {
 
 				for (var a = 1; a < vs.Length; a += 2) {
 					var kv = new[] { vs[a], vs[a + 1] };
-					if (kv[0].ToLower().Trim() == "password") _password = kv.Length > 1 ? kv[1] : "";
-					else if (kv[0].ToLower().Trim() == "prefix") Prefix = kv.Length > 1 ? kv[1] : "";
-					else if (kv[0].ToLower().Trim() == "defaultdatabase") _database = int.TryParse(kv.Length > 1 ? kv[1] : "0", out _database) ? _database : 0;
-					else if (kv[0].ToLower().Trim() == "poolsize") PoolSize = int.TryParse(kv.Length > 1 ? kv[1] : "0", out var poolsize) == false || poolsize <= 0 ? 50 : poolsize;
-					else if (kv[0].ToLower().Trim() == "ssl") _ssl = kv.Length > 1 ? kv[1] == "true" : false;
-					else if (kv[0].ToLower().Trim() == "writebuffer") _writebuffer = int.TryParse(kv.Length > 1 ? kv[1] : "10240", out _writebuffer) ? _writebuffer : 10240;
+                    var tkv = kv[0].ToLower().Trim();
+                    switch(tkv){
+                        case "password":
+                            _password = kv.Length > 1 ? kv[1] : "";
+                            break;
+                        case "prefix":
+                            Prefix = kv.Length > 1 ? kv[1] : "";
+                            break;
+                        case "defaultdatabase":
+                            _database = int.TryParse(kv.Length > 1 ? kv[1] : "0", out _database) ? _database : 0;
+                            break;
+                        case "poolsize":
+                            PoolSize = int.TryParse(kv.Length > 1 ? kv[1] : "0", out var poolsize) == false || poolsize <= 0 ? 50 : poolsize;
+                            break;
+                        case "ssl":
+                            _ssl = kv.Length > 1 && kv[1] == "true";
+                            break;
+                        case "writebuffer":
+                            _writebuffer = int.TryParse(kv.Length > 1 ? kv[1] : "10240", out _writebuffer) ? _writebuffer : 10240;
+                            break;
+                    }
 				}
 
 				if (isPreheat) {

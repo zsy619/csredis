@@ -101,7 +101,7 @@ namespace CSRedis
         Socket _socket;
         readonly SocketPool _pool;
 
-        public bool Connected { get { return _socket == null ? false : _socket.Connected; } }
+        public bool Connected => _socket != null && _socket.Connected;
 
         public int ReceiveTimeout
         {
