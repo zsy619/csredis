@@ -23,7 +23,7 @@ namespace CSRedis.Internal.IO
         Socket _socket;
         EndPoint _remote;
 
-        public bool Connected { get { return _socket == null ? false : _socket.Connected; } }
+        public bool Connected => _socket != null && _socket.Connected;
 
         public int ReceiveTimeout
         {
@@ -99,9 +99,9 @@ namespace CSRedis.Internal.IO
         {
             if (_remote == null)
                 throw new ArgumentNullException("Remote endpoint is not set");
-            else if (_remote is DnsEndPoint)
+            if (_remote is DnsEndPoint)
                 return (_remote as DnsEndPoint).Host;
-            else if (_remote is IPEndPoint)
+            if (_remote is IPEndPoint)
                 return (_remote as IPEndPoint).Address.ToString();
 
             throw new InvalidOperationException("Cannot get remote host");

@@ -42,10 +42,7 @@ namespace CSRedis.Internal.IO
 
         public object ReadBulk(bool checkType = true, bool asString = false)
         {
-            if (asString)
-                return ReadBulkString(checkType);
-            else
-                return ReadBulkBytes(checkType);
+            return asString ? ReadBulkString(checkType) : (object)ReadBulkBytes(checkType);
         }
 
         public byte[] ReadBulkBytes(bool checkType = true)
@@ -100,9 +97,7 @@ namespace CSRedis.Internal.IO
         public string ReadBulkString(bool checkType = true)
         {
             byte[] bulk = ReadBulkBytes(checkType);
-            if (bulk == null)
-                return null;
-            return _io.Encoding.GetString(bulk);
+            return bulk == null ? null : _io.Encoding.GetString(bulk);
         }
 
         public void ExpectType(RedisMessage expectedType)
